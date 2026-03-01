@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LearnoStream — Phone Server Setup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0f;
+    color: #f0f0ff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .card {
+    background: #12121a;
+    border: 1px solid #2e2e4e;
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 700px;
+    width: 100%;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+  h1 span { color: #f97316; }
+  .sub { color: #8888aa; font-size: 0.95rem; margin-bottom: 2rem; }
+
+  .steps { list-style: none; counter-reset: step; margin-bottom: 2rem; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    background: #f97316;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    shrink: 0;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .steps li p { font-size: 0.95rem; line-height: 1.5; }
+  .steps li a { color: #f97316; }
+  .steps li strong { color: white; }
+
+  .cmd-box {
+    background: #0a0a0f;
+    border: 1px solid #2e2e4e;
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+  .cmd-box code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #4ade80;
+    word-break: break-all;
+    display: block;
+    line-height: 1.6;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    background: #22223a;
+    border: 1px solid #2e2e4e;
+    color: #8888aa;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: #f97316; color: #f97316; }
+  .copy-btn.copied { color: #4ade80; border-color: #4ade80; }
+
+  .note {
+    background: #1a1a26;
+    border-left: 3px solid #f97316;
+    padding: 0.8rem 1rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: #8888aa;
+    margin-top: 1rem;
+  }
+  .note strong { color: #f0f0ff; }
+
+  .badge {
+    display: inline-block;
+    background: #4ade80/20;
+    background-color: rgba(74,222,128,0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 20px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 500px) {
+    .card { padding: 1.5rem; }
+    h1 { font-size: 1.3rem; }
+    .cmd-box code { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="badge">📱 Old Phone Setup</div>
+  <h1>Learno<span>Stream</span> Phone Server</h1>
+  <p class="sub">Turn your old Android phone into a live streaming server in 2 minutes.</p>
+
+  <ol class="steps">
+    <li>
+      <div>
+        <p><strong>Install Termux</strong> on your old phone (free, from F-Droid — not Play Store)</p>
+        <p style="margin-top:0.4rem">
+          <a href="https://f-droid.org/packages/com.termux/" target="_blank">
+            👉 Download Termux from F-Droid
+          </a>
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <p><strong>Open Termux</strong> and paste this single command:</p>
+        <div class="cmd-box" id="box1">
+          <code id="cmd1">curl -sL https://raw.githubusercontent.com/YOUR_REPO/main/phone-server/install.sh | bash</code>
+          <button class="copy-btn" onclick="copy('cmd1','btn1')" id="btn1">Copy</button>
+        </div>
+        <p style="margin-top:0.5rem; color:#8888aa; font-size:0.85rem">
+          ⏳ This takes about 2–3 minutes. It installs everything automatically.
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <p><strong>After setup completes</strong>, start the server:</p>
+        <div class="cmd-box" id="box2">
+          <code id="cmd2">bash ~/learnostream/start.sh</code>
+          <button class="copy-btn" onclick="copy('cmd2','btn2')" id="btn2">Copy</button>
+        </div>
+        <p style="margin-top:0.5rem; color:#8888aa; font-size:0.85rem">
+          First time: it will ask for a free ngrok token (30 second signup).
+          Then it shows you a URL like <code style="color:#f97316">wss://abc123.ngrok.io</code>
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <p><strong>Copy that WSS URL</strong> into your Vercel project:</p>
+        <p style="color:#8888aa; font-size:0.85rem; margin-top:0.3rem">
+          Vercel → Your Project → Settings → Environment Variables<br>
+          Add: <code style="color:#f97316">VITE_PHONE_SERVER_URL</code> = the wss:// URL<br>
+          Then click Redeploy.
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <p><strong>Done!</strong> Go to your site → Admin → Go Live 🔴</p>
+      </div>
+    </li>
+  </ol>
+
+  <div class="note">
+    <strong>Every time you want to stream:</strong> Open Termux → run
+    <code style="color:#4ade80; font-size:0.85rem">bash ~/learnostream/start.sh</code>
+    — the URL changes each time (free ngrok), so update Vercel env var and redeploy.
+    <br><br>
+    <strong>Tip:</strong> Get a paid ngrok plan ($8/mo) or use a fixed domain to avoid updating the URL every time.
+  </div>
+</div>
+
+<script>
+function copy(id, btnId) {
+  const text = document.getElementById(id).textContent.trim()
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId)
+    btn.textContent = 'Copied!'
+    btn.classList.add('copied')
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied') }, 2000)
+  })
+}
+</script>
+</body>
+</html>
