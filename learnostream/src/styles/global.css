@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #f97316;
+  --brand-dim: #ea580c;
+  --surface: #12121a;
+  --surface-2: #1a1a26;
+  --surface-3: #22223a;
+  --border: #2e2e4e;
+  --text: #f0f0ff;
+  --text-muted: #8888aa;
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  html, body {
+    @apply bg-dark-900 text-white;
+    font-family: 'DM Sans', sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-500 hover:bg-brand-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply border border-[var(--border)] hover:border-brand-500 text-[var(--text-muted)] hover:text-white px-5 py-2.5 rounded-lg transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-dark-800 border border-dark-600 rounded-2xl overflow-hidden;
+  }
+
+  .input {
+    @apply w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2.5 text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-brand-500 transition-colors;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+
+/* Live dot */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #ef4444;
+  animation: livePulse 1.4s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* Video.js overrides */
+.vjs-theme-learno .vjs-control-bar  { background: linear-gradient(transparent, rgba(0,0,0,0.85)); }
+.vjs-theme-learno .vjs-play-progress { background: var(--brand); }
+.vjs-theme-learno .vjs-big-play-button {
+  border-color: var(--brand);
+  background: rgba(249,115,22,0.15);
+}

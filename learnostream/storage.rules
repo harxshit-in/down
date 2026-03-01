@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper: check if user is admin via Firestore
+    // Note: Storage rules cannot directly query Firestore, so we use a token claim.
+    // Set custom claims on the backend: admin: true
+    // OR use the UID-based check pattern below with a known admin UID list.
+    // Best practice: set customClaims { admin: true } in Cloud Functions after role assignment.
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ── Raw video uploads (admin only, max 2 GB) ───────────────────────────
+    match /videos/{userId}/{fileName} {
+      allow read:   if true;           // public read for playback
+      allow create: if isAdmin()
+                    && request.resource.size < 2 * 1024 * 1024 * 1024
+                    && request.resource.contentType.matches('video/.*');
+      allow delete: if isAdmin();
+    }
+
+    // ── Thumbnails (admin write, public read) ──────────────────────────────
+    match /thumbnails/{videoId}/{fileName} {
+      allow read:   if true;
+      allow write:  if isAdmin();
+    }
+
+    // ── User avatars (authenticated users) ────────────────────────────────
+    match /avatars/{userId}/{fileName} {
+      allow read:  if true;
+      allow write: if isAuthenticated()
+                   && request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

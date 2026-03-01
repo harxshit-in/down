@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if current user is admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ── Users ──────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      // Users can read/write their own profile; admins can read all
+      allow read: if isAuthenticated() && (request.auth.uid == uid || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == uid;
+      allow update: if isAuthenticated() && request.auth.uid == uid
+                    && !('role' in request.resource.data);  // users cannot self-elevate role
+      // Only admins can change role
+      allow update: if isAdmin();
+    }
+
+    // ── Videos ─────────────────────────────────────────────────────────────
+    match /videos/{videoId} {
+      // Public videos are readable by everyone; private only by authenticated users
+      allow read: if resource.data.privacy == 'public'
+                  || (isAuthenticated() && resource.data.privacy == 'unlisted')
+                  || isAdmin();
+
+      // Only admins can create/update/delete video documents
+      allow create, update, delete: if isAdmin();
+
+      // Comments sub-collection
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isAuthenticated()
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() <= 500;
+        allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      }
+    }
+
+    // ── Live sessions ──────────────────────────────────────────────────────
+    match /lives/{liveId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+
+      // Realtime chat sub-collection
+      match /chat/{messageId} {
+        allow read: if true;
+        allow create: if isAuthenticated()
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() <= 300;
+        allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      }
+    }
+
+    // ── Analytics (write-only for auth users, read-only for admins) ────────
+    match /analytics/{docId} {
+      allow read:  if isAdmin();
+      allow write: if isAuthenticated();
+    }
+  }
+}
